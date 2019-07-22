@@ -63,3 +63,4 @@ def index(request):
     username = request.COOKIES.get("username")
     user = Seller.objects.get(username=username)
     return render(request,"store/index.html")
+
