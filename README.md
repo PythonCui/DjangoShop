@@ -1,0 +1,2 @@
+# DjangoShop
+Fresh Shop!
