@@ -18,7 +18,7 @@ class StoreType(models.Model):
 
 
 class Store(models.Model):
-    stor_name = models.CharField(max_length=32, verbose_name="店铺名称")
+    store_name = models.CharField(max_length=32, verbose_name="店铺名称")
     store_address = models.CharField(max_length=32, verbose_name="店铺地址")
     store_description = models.TextField(verbose_name="店铺描述")
     store_logo = models.ImageField(upload_to="store/images", verbose_name="店铺logo", null=True, blank=True)
