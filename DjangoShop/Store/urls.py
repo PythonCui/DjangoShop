@@ -5,5 +5,10 @@ urlpatterns = [
     path('register/', register),
     path('login/', login),
     path('index/', index),
+    path('logout/', logout),
     re_path('^$', index),
+]
+
+urlpatterns += [
+    path('base/', base),
 ]

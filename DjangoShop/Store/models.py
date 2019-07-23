@@ -18,12 +18,11 @@ class StoreType(models.Model):
 
 
 class Store(models.Model):
-    stor_ename = models.CharField(max_length=32, verbose_name="店铺名称")
+    stor_name = models.CharField(max_length=32, verbose_name="店铺名称")
     store_address = models.CharField(max_length=32, verbose_name="店铺地址")
     store_description = models.TextField(verbose_name="店铺描述")
     store_logo = models.ImageField(upload_to="store/images", verbose_name="店铺logo", null=True, blank=True)
     store_phone = models.CharField(max_length=32, verbose_name="店铺电话")
-    username = models.CharField(max_length=32, verbose_name="用户名")
     store_money = models.FloatField(verbose_name="店铺注册资金")
 
     user_id = models.IntegerField(verbose_name="店主")
