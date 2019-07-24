@@ -42,6 +42,7 @@ def register(request):
             return HttpResponseRedirect("/Store/login/")
     return render(request,"store/register.html")
 
+
 def login(request):
     """
     登陆功能，如果登陆成功，跳转到首页
@@ -62,6 +63,11 @@ def login(request):
                     response.set_cookie("username",username)
                     response.set_cookie("user_id", user.id) #cookie提供用户id方便其他功能查询
                     request.session["username"] = username
+                    store = Store.objects.filter(user_id=user.id).first()
+                    if store:
+                        response.set_cookie("has_store", store.id)
+                    else:
+                        response.set_cookie("has_store", "")
                     return response
     return response
 
@@ -95,6 +101,7 @@ def ajax_vaild(request):
             restul['content'] = '用户名不为空'
     return JsonResponse(restul)
 
+@login_valid
 def register_store(request):
     type_list = StoreType.objects.all()
     if request.method == 'POST':
@@ -123,17 +130,19 @@ def register_store(request):
             store_type = StoreType.objects.get(id=i)
             store.type.add(store_type)
         store.save()#保存数据
+        response = HttpResponseRedirect("/Store/index/")
+        response.set_cookie("has_store", store.id)
+        return response
     return render(request,'store/register_store.html',locals())
-
-def base(request):
-    return render(request,"store/base.html")
 
 def logout(request):
     response = HttpResponseRedirect('/Store/login/')
     response.delete_cookie('username')
     response.delete_cookie('user_id')
+    response.delete_cookie('has_store')
     return response
 
+@login_valid
 def add_goods(request):
     """
     负责添加商品
@@ -146,7 +155,7 @@ def add_goods(request):
         goods_description = request.POST.get("goods_description")
         goods_date = request.POST.get("goods_date")
         goods_safeDate = request.POST.get("goods_safeDate")
-        goods_store = request.POST.get("goods_store")
+        goods_store = request.COOKIES.get("has_store")
         goods_image = request.FILES.get("goods_image")
         #开始保存数据
         goods = Goods()
@@ -158,21 +167,54 @@ def add_goods(request):
         goods.goods_safeDate = goods_safeDate
         goods.goods_image = goods_image
         goods.save()
-        #保存多对多数据
         goods.store_id.add(
-            Store.objects.get(id = int(goods_store))
+            Store.objects.get(id=int(request.COOKIES.get("has_store")))
         )
         goods.save()
     return render(request,"store/add_goods.html")
 
+@login_valid
 def list_goods(request):
     keywords = request.GET.get("keywords","")
     page_num = request.GET.get("page_num",1)
+    store_id = request.COOKIES.get("has_store")
+    store = Store.objects.get(id=int(store_id))
     if keywords:
         goods_list = Goods.objects.filter(goods_name__contains=keywords)
     else:
-        goods_list = Goods.objects.all()
+        goods_list = store.goods_set.all()
     paginator = Paginator(goods_list,3)
     page = paginator.page(int(page_num))
     page_range = paginator.page_range
     return render(request,"store/list_goods.html",{"page":page, "page_range":page_range, "keywords":keywords})
+
+def goods(request, goods_id):
+    goods_data = Goods.objects.filter(id=goods_id).first()
+    return render(request,"store/goods.html",locals())
+
+def update_goods(request, goods_id):
+    goods_data = Goods.objects.filter(id=goods_id).first()
+    if request.method == "POST":
+        goods_name = request.POST.get("goods_name")
+        goods_price = request.POST.get("goods_price")
+        goods_number = request.POST.get("goods_number")
+        goods_description = request.POST.get("goods_description")
+        goods_date = request.POST.get("goods_date")
+        goods_safeDate = request.POST.get("goods_safeDate")
+        goods_image = request.FILES.get("goods_image")
+        # 开始保存数据
+        goods = Goods.objects.get(id=goods_id)
+        goods.goods_name = goods_name
+        goods.goods_price = goods_price
+        goods.goods_number = goods_number
+        goods.goods_description = goods_description
+        goods.goods_date = goods_date
+        goods.goods_safeDate = goods_safeDate
+        if goods_image:
+            goods.goods_image = goods_image
+        goods.save()
+        return HttpResponseRedirect("/Store/goods/%s/"%goods_id)
+    return render(request,"store/update_goods.html",locals())
+
+def base(request):
+    return render(request,"store/base.html")

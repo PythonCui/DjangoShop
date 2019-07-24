@@ -41,18 +41,14 @@
       <hr class="sidebar-divider my-0">
 
       <!-- Nav Item - Dashboard -->
+        {% if request.COOKIES.has_store %}
       <li class="nav-item">
-        {% if is_store %}
-        <a class="nav-link" href="index.html">
+
+        <a class="nav-link" href="/Store/index/">
           <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>店铺管理</span>
+          <span>已有店铺</span>
         </a>
-        {% else %}
-        <a class="nav-link" href="/Store/register_store/">
-          <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>没有店铺，注册一个</span>
-        </a>
-        {% endif %}
+
       </li>
 
       <!-- Divider -->
@@ -74,10 +70,16 @@
             <h6 class="collapse-header">商品管理:</h6>
             <a class="collapse-item" href="/Store/add_goods/">添加商品</a>
             <a class="collapse-item" href="/Store/list_goods/">商品列表</a>
-            <a class="collapse-item" href="cards.html">商品详情</a>
           </div>
         </div>
       </li>
+        {% else %}
+        <li class="nav-item">
+        <a class="nav-link" href="/Store/register_store/">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>没有店铺，前去注册</span></a>
+      </li>
+        {% endif %}
     </ul>
     <!-- End of Sidebar -->
 
@@ -258,7 +260,7 @@
                   登录日志
                 </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                <a class="dropdown-item" href="/Store/logout/" data-toggle="modal" data-target="#logoutModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                   退出
                 </a>
@@ -316,8 +318,8 @@
         </div>
         <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
         <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="login.html">Logout</a>
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">取消</button>
+          <a class="btn btn-primary" href="/Store/logout/">退出</a>
         </div>
       </div>
     </div>
