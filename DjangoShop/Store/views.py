@@ -137,9 +137,8 @@ def register_store(request):
 
 def logout(request):
     response = HttpResponseRedirect('/Store/login/')
-    response.delete_cookie('username')
-    response.delete_cookie('user_id')
-    response.delete_cookie('has_store')
+    for key in request.COOKIES:
+        response.delete_cookie(key)
     return response
 
 @login_valid
@@ -174,15 +173,19 @@ def add_goods(request):
     return render(request,"store/add_goods.html")
 
 @login_valid
-def list_goods(request):
+def list_goods(request, state):
+    if state == "up":
+        state_num = 1
+    else:
+        state_num = 0
     keywords = request.GET.get("keywords","")
     page_num = request.GET.get("page_num",1)
     store_id = request.COOKIES.get("has_store")
     store = Store.objects.get(id=int(store_id))
     if keywords:
-        goods_list = Goods.objects.filter(goods_name__contains=keywords)
+        goods_list = store.goods_set.filter(goods_name__contains=keywords, goods_under=state_num)
     else:
-        goods_list = store.goods_set.all()
+        goods_list = store.goods_set.filter(goods_under=state_num)
     paginator = Paginator(goods_list,3)
     page = paginator.page(int(page_num))
     page_range = paginator.page_range
@@ -215,6 +218,21 @@ def update_goods(request, goods_id):
         goods.save()
         return HttpResponseRedirect("/Store/goods/%s/"%goods_id)
     return render(request,"store/update_goods.html",locals())
+
+def set_goods(request, state):
+    if state == "up":
+        state_num = 1
+    else:
+        state_num = 0
+    id = request.GET.get("id")
+    referer = request.META.get("HTTP_REFERER")
+    if id:
+        goods = Goods.objects.filter(id = id).first()
+        if state == "delete":
+            goods.delete()
+        goods.goods_under = state_num
+        goods.save()
+        return HttpResponseRedirect(referer)
 
 def base(request):
     return render(request,"store/base.html")
