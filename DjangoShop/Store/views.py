@@ -189,7 +189,7 @@ def list_goods(request, state):
     paginator = Paginator(goods_list,3)
     page = paginator.page(int(page_num))
     page_range = paginator.page_range
-    return render(request,"store/list_goods.html",{"page":page, "page_range":page_range, "keywords":keywords})
+    return render(request,"store/list_goods.html",{"page":page, "page_range":page_range, "keywords":keywords,"state":state})
 
 def goods(request, goods_id):
     goods_data = Goods.objects.filter(id=goods_id).first()
@@ -230,9 +230,10 @@ def set_goods(request, state):
         goods = Goods.objects.filter(id = id).first()
         if state == "delete":
             goods.delete()
-        goods.goods_under = state_num
-        goods.save()
-        return HttpResponseRedirect(referer)
+        else:
+            goods.goods_under = state_num
+            goods.save()
+    return HttpResponseRedirect(referer)
 
 def base(request):
     return render(request,"store/base.html")
