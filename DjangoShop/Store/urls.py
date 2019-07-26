@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout/', logout),
     path('register_store/', register_store),
     path('add_goods/', add_goods),
+    path('type_goods/', type_goods),
     re_path(r'list_goods/(?P<state>\w+)', list_goods),
     re_path('^$', index),
     re_path(r'^goods/(?P<goods_id>\d+)',goods),

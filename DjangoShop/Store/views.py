@@ -139,6 +139,7 @@ def logout(request):
     response = HttpResponseRedirect('/Store/login/')
     for key in request.COOKIES:
         response.delete_cookie(key)
+    del request.session["username"]
     return response
 
 @login_valid
@@ -146,6 +147,7 @@ def add_goods(request):
     """
     负责添加商品
     """
+    goods_type_list = GoodsType.objects.all()
     if request.method == "POST":
         #获取post请求
         goods_name = request.POST.get("goods_name")
@@ -154,6 +156,8 @@ def add_goods(request):
         goods_description = request.POST.get("goods_description")
         goods_date = request.POST.get("goods_date")
         goods_safeDate = request.POST.get("goods_safeDate")
+        type_id = request.POST.get("type_id")
+        print(type_id)
         goods_store = request.COOKIES.get("has_store")
         goods_image = request.FILES.get("goods_image")
         #开始保存数据
@@ -164,13 +168,14 @@ def add_goods(request):
         goods.goods_description = goods_description
         goods.goods_date = goods_date
         goods.goods_safeDate = goods_safeDate
+        goods.type_id = GoodsType.objects.get(id = int(type_id))
         goods.goods_image = goods_image
         goods.save()
         goods.store_id.add(
             Store.objects.get(id=int(request.COOKIES.get("has_store")))
         )
         goods.save()
-    return render(request,"store/add_goods.html")
+    return render(request,"store/add_goods.html",locals())
 
 @login_valid
 def list_goods(request, state):
@@ -197,6 +202,7 @@ def goods(request, goods_id):
 
 def update_goods(request, goods_id):
     goods_data = Goods.objects.filter(id=goods_id).first()
+    goods_type_list = GoodsType.objects.all()
     if request.method == "POST":
         goods_name = request.POST.get("goods_name")
         goods_price = request.POST.get("goods_price")
@@ -204,6 +210,7 @@ def update_goods(request, goods_id):
         goods_description = request.POST.get("goods_description")
         goods_date = request.POST.get("goods_date")
         goods_safeDate = request.POST.get("goods_safeDate")
+        type_id = request.POST.get("type_id")
         goods_image = request.FILES.get("goods_image")
         # 开始保存数据
         goods = Goods.objects.get(id=goods_id)
@@ -213,6 +220,7 @@ def update_goods(request, goods_id):
         goods.goods_description = goods_description
         goods.goods_date = goods_date
         goods.goods_safeDate = goods_safeDate
+        goods.type_id = GoodsType.objects.get(id=int(type_id))
         if goods_image:
             goods.goods_image = goods_image
         goods.save()
@@ -234,6 +242,19 @@ def set_goods(request, state):
             goods.goods_under = state_num
             goods.save()
     return HttpResponseRedirect(referer)
+
+def type_goods(request):
+    goods_type_list = GoodsType.objects.all()
+    if request.method == "POST":
+        name = request.POST.get("name")
+        description = request.POST.get("description")
+        picture = request.POST.get("picture")
+        goods_type = GoodsType()
+        goods_type.name = name
+        goods_type.description = description
+        goods_type.picture = picture
+        goods_type.save()
+    return render(request,"store/type_goods.html",locals())
 
 def base(request):
     return render(request,"store/base.html")
