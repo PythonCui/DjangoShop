@@ -12,3 +12,5 @@ base页添加完成！
 COOKIES校验完成！
 
 BuyerApp新建！
+
+商品类型添加完成！

@@ -248,13 +248,20 @@ def type_goods(request):
     if request.method == "POST":
         name = request.POST.get("name")
         description = request.POST.get("description")
-        picture = request.POST.get("picture")
+        picture = request.FILES.get("picture")
         goods_type = GoodsType()
         goods_type.name = name
         goods_type.description = description
         goods_type.picture = picture
         goods_type.save()
     return render(request,"store/type_goods.html",locals())
+
+@login_valid
+def delete_goods_type(request):
+    id = int(request.GET.get("id"))
+    goods_type = GoodsType.objects.get(id=id)
+    goods_type.delete()
+    return HttpResponseRedirect("/Store/type_goods")
 
 def base(request):
     return render(request,"store/base.html")
