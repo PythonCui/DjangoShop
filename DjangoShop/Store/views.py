@@ -87,19 +87,19 @@ def index(request):
     return render(request, "store/index.html", {"is_store":is_store})
 
 def ajax_vaild(request):
-    restul = {'status':'error','content':''}
+    result = {'status':'error','content':''}
     if request.method == 'GET':
         username = request.GET.get('username')
         if username:
             user = Seller.objects.filter(username=username).first()
             if user:
-                restul['content'] = '用户名存在'
+                result['content'] = '用户名存在'
             else:
-                restul['content'] = '用户名可以用'
-                restul['status'] = 'success'
+                result['content'] = '用户名可以用'
+                result['status'] = 'success'
         else:
-            restul['content'] = '用户名不为空'
-    return JsonResponse(restul)
+            result['content'] = '用户名不为空'
+    return JsonResponse(result)
 
 @login_valid
 def register_store(request):

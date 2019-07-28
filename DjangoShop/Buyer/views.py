@@ -83,47 +83,18 @@ def logout(request):
     return response
 
 def pay_result(request):
-    """
-        支付宝支付成功自动用get请求返回的参数
-        #编码
-        charset=utf-8
-        #订单号
-        out_trade_no=10002
-        #订单类型
-        method=alipay.trade.page.pay.return
-        #订单金额
-        total_amount=1000.00
-        #校验值
-        sign=enBOqQsaL641Ssf%2FcIpVMycJTiDaKdE8bx8tH6shBDagaNxNfKvv5iD737ElbRICu1Ox9OuwjR5J92k0x8Xr3mSFYVJG1DiQk3DBOlzIbRG1jpVbAEavrgePBJ2UfQuIlyvAY1fu%2FmdKnCaPtqJLsCFQOWGbPcPRuez4FW0lavIN3UEoNGhL%2BHsBGH5mGFBY7DYllS2kOO5FQvE3XjkD26z1pzWoeZIbz6ZgLtyjz3HRszo%2BQFQmHMX%2BM4EWmyfQD1ZFtZVdDEXhT%2Fy63OZN0%2FoZtYHIpSUF2W0FUi7qDrzfM3y%2B%2BpunFIlNvl49eVjwsiqKF51GJBhMWVXPymjM%2Fg%3D%3D&trade_no=2019072622001422161000050134&auth_app_id=2016093000628355&version=1.0&app_id=2016093000628355
-        #订单号
-        trade_no=2019072622001422161000050134
-        #用户的应用id
-        auth_app_id=2016093000628355
-        #版本
-        version=1.0
-        #商家的应用id
-        app_id=2016093000628355
-        #加密方式
-        sign_type=RSA2
-        #商家id
-        seller_id=2088102177891440
-        #时间
-        timestamp=2019-07-26
-        """
-
     return render(request, "buyer/pay_result.html", locals())
 
 def pay_order(request):
     money = request.GET.get("money") #获取订单金额
     order_id = request.GET.get("order_id") #获取订单id
 
-
     alipay_public_key_string = '''-----BEGIN PUBLIC KEY-----
-    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApFRvZQNEzn5pGfKxzjzv7pCEb2gAOpPBmRv0CXtzbftnvwJ3dC9uhFpKYLDLdZ5rKv+y3s8iWCQqcY0xnn2XzloyP2n+J2c8UFpxXN+BjRDV5j3RSdPI4aFi7EbSWVgFefGrnIwTWOwmPmD3L3GkxrPgPOm6DtN7ahE5g6Xgn6BJy/mr3474jMlS47Pj6Pr4cPNW0wOysNbwsNLPjQEEEA1vTk1gKYVcPrbb9F0HQp8NEny7A20FxNRPRMrKAD9me39Gl4ZOo5EYvCfu/qHV2PzLzffuMJrJR+NU071VRLUo65phJvKlAGC4ccuzvXjcty4fydqwgZtQi6g7Ctv2ywIDAQAB
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2Vc4DEDDncW64jDXnuOWTWTYZt1vMT1yPCp+EvThS8De5y35rXBOHp5qgrD/XDN7d5RI5W0RxcJlXqntDStYweW1524z7AVl9sSC7AS5HoLPjK3ryd5MdvyqmvYSQaA0qahP/V77YEmrQ6xdOgmq+sQMQVXXYX7BKWCrZaoIz5++e3ga7zvwvV/tPI7D1xLrU/47Yy/5J4evDB3do+WTxF1YD02W9oV/03sZiR4yBA+rt9K8JpkRlMLb7pRVFQ3O8oM8nGvV9v9x5Pjhf62/cjibwQUpbSH5YUid2S9uT50MWii9czwozF7AN8BzCf05AzQiDwge/BO0bMNodhsiAQIDAQAB
     -----END PUBLIC KEY-----'''
 
     app_private_key_string = '''-----BEGIN RSA PRIVATE KEY-----
-    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
+    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
     -----END RSA PRIVATE KEY-----'''
 
     alipay = AliPay(
@@ -145,5 +116,11 @@ def pay_order(request):
 
     return HttpResponseRedirect("https://openapi.alipaydev.com/gateway.do?" + order_string)
 
+def detail(request):
+    id = request.GET.get("id")
+    goods = Goods.objects.filter(id=id).first()
+    return render(request,"buyer/detail.html",locals())
+
+
 def base(request):
-    return render(request,"buyer/base.html")
+    return render(request, "buyer/base.html")

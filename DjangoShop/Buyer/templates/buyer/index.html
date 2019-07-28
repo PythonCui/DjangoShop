@@ -13,12 +13,12 @@
 {% block content %}
     <div class="center_con clearfix">
 		<ul class="subnav fl">
-			<li><a href="#model01" class="fruit">新鲜水果</a></li>
-			<li><a href="#model02" class="seafood">海鲜水产</a></li>
-			<li><a href="#model03" class="meet">猪牛羊肉</a></li>
-			<li><a href="#model04" class="egg">禽类蛋品</a></li>
-			<li><a href="#model05" class="vegetables">新鲜蔬菜</a></li>
-			<li><a href="#model06" class="ice">速冻食品</a></li>
+			<li><a href="/Buyer/goods_list/?type_id=12" class="fruit">新鲜水果</a></li>
+			<li><a href="/Buyer/goods_list/?type_id=13" class="seafood">海鲜水产</a></li>
+			<li><a href="/Buyer/goods_list/?type_id=14" class="meet">猪牛羊肉</a></li>
+			<li><a href="/Buyer/goods_list/?type_id=15" class="egg">禽类蛋品</a></li>
+			<li><a href="/Buyer/goods_list/?type_id=16" class="vegetables">新鲜蔬菜</a></li>
+			<li><a href="/Buyer/goods_list/?type_id=17" class="ice">速冻食品</a></li>
 		</ul>
 		<div class="slide fl">
 			<ul class="slide_pics">
@@ -54,7 +54,7 @@
                 {% for goods in goods_type.goods_list %}
 				<li>
 					<h4><a href="#">{{ goods.goods_name }}</a></h4>
-					<a href="#"><img src="/static/{{ goods.goods_image }}"></a>
+					<a href="/Buyer/detail/?id={{ goods.id }}"><img src="/static/{{ goods.goods_image }}"></a>
 					<div class="prize">¥ {{ goods.goods_price }}</div>
 				</li>
                 {% endfor %}

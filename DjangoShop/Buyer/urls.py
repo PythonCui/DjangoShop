@@ -9,6 +9,7 @@ urlpatterns = [
     path('pay_order/', pay_order),
     path('pay_result/', pay_result),
     path('goods_list/', goods_list),
+    path('detail/', detail),
 ]
 
 urlpatterns += [
