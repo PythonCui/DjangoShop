@@ -1,4 +1,6 @@
+import datetime
 from django.db import models
+from django.db.models import Manager
 
 # Create your models here.
 class Seller(models.Model):
@@ -30,11 +32,22 @@ class Store(models.Model):
     user_id = models.IntegerField(verbose_name="店主")
     type = models.ManyToManyField(to=StoreType, verbose_name="店铺类型")
 
+class GoodsTypeManage(Manager):
+    def addType(self,name,picture="buyer/images/banner01.jpg"):
+        goods_type = GoodsType()
+        goods_type.name = name
+        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        goods_type.description = "%s-%s"%(now,name)
+        goods_type.picture = picture
+        goods_type.save()
+        return goods_type
 
 class GoodsType(models.Model):
     name = models.CharField(max_length=32,verbose_name="商品类型")
     description = models.TextField(verbose_name="商品类型描述")
     picture = models.ImageField(upload_to="buyer/images")
+
+    objects = GoodsTypeManage()
 
 
 class Goods(models.Model):
@@ -47,7 +60,7 @@ class Goods(models.Model):
     goods_safeDate = models.IntegerField(verbose_name="保质期")
     goods_under = models.IntegerField(verbose_name="商品状态", default=1)
 
-    store_id = models.ManyToManyField(to=Store, verbose_name="商品店铺")
+    store_id = models.ForeignKey(to=Store,on_delete=models.CASCADE, verbose_name="商品店铺")
     type_id = models.ForeignKey(to=GoodsType,on_delete=models.CASCADE,verbose_name="商品类型")
 
 

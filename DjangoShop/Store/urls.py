@@ -9,6 +9,7 @@ urlpatterns = [
     path('register_store/', register_store),
     path('add_goods/', add_goods),
     path('type_goods/', type_goods),
+    path('order_list/', order_list),
     path('delete_goods_type/', delete_goods_type),
     re_path(r'list_goods/(?P<state>\w+)', list_goods),
     re_path('^$', index),
@@ -19,4 +20,5 @@ urlpatterns = [
 
 urlpatterns += [
     path('base/', base),
+    path('agl/', ajax_goods_list),
 ]

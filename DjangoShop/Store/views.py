@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import HttpResponseRedirect
 
 from Store.models import *
+from Buyer.models import *
 
 # Create your views here.
 def set_password(password):
@@ -170,10 +171,8 @@ def add_goods(request):
         goods.goods_safeDate = goods_safeDate
         goods.type_id = GoodsType.objects.get(id = int(type_id))
         goods.goods_image = goods_image
-        goods.save()
-        goods.store_id.add(
-            Store.objects.get(id=int(request.COOKIES.get("has_store")))
-        )
+        goods.store_id = Store.objects.get(id=int(request.COOKIES.get("has_store")))
+
         goods.save()
     return render(request,"store/add_goods.html",locals())
 
@@ -265,3 +264,32 @@ def delete_goods_type(request):
 
 def base(request):
     return render(request,"store/base.html")
+
+def order_list(request):
+    store_id = request.COOKIES.get("has_store")
+    order_list = OrderDetail.objects.filter(order_id__order_status=2,goods_store=store_id)
+    return render(request,"store/order_list.html",locals())
+
+from rest_framework import viewsets
+
+from Store.serializers import *
+from django_filters.rest_framework import DjangoFilterBackend
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = Goods.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ["goods_name","goods_price"]
+
+from django.core.mail import send_mail
+
+def sendMail(request):
+    send_mail("邮件主题","邮件内容","from_email",["to_email"],fail_silently=False)
+
+
+
+class TypeViewSet(viewsets.ModelViewSet):
+    queryset = GoodsType.objects.all()
+    serializer_class = GoodsTypeSerializer
+
+def ajax_goods_list(request):
+    return render(request,"store/ajax_goods_list.html")

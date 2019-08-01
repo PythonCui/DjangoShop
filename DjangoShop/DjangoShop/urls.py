@@ -18,11 +18,25 @@ from django.urls import path,include,re_path
 
 from Buyer.views import index
 
+from Store.views import UserViewSet, TypeViewSet
+
+from rest_framework import routers
+
+
+
+
+
+router = routers.DefaultRouter()
+router.register(r"goods",UserViewSet)
+router.register(r"TypeGoods",TypeViewSet)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('Store/', include("Store.urls")),
     path('Buyer/', include("Buyer.urls")),
     path('ckeditor/', include("ckeditor_uploader.urls")),
+    re_path('^API', include(router.urls)),
+    re_path('^api_auth', include("rest_framework.urls")),
 ]
 
 urlpatterns += [

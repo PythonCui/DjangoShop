@@ -7,29 +7,34 @@
 {% block content %}
     <div class="goods_detail_con clearfix">
 		<div class="goods_detail_pic fl">
-            <img src="/static/{{ goods.goods_image }}">
+            <img style="width: 350px; height: 350px;" src="/static/{{ goods.goods_image }}">
         </div>
 
 		<div class="goods_detail_list fr">
 			<h3>{{ goods.goods_name }}</h3>
 			<p>{{ goods.goods_description }}</p>
 			<div class="prize_bar">
-				<span class="show_pirze">¥<em>{{ goods.goods_price }}</em></span>
+				<span class="show_pirze" >¥<em id="price">{{ goods.goods_price }}</em></span>
 				<span class="show_unit">单  位：500g</span>
 			</div>
+            <form method="post" action="/Buyer/place_order/">
+                {% csrf_token %}
 			<div class="goods_num clearfix">
 				<div class="num_name fl">数 量：</div>
 				<div class="num_add fl">
-					<input type="text" class="num_show fl" value="1">
-					<a href="javascript:;" class="add fr">+</a>
-					<a href="javascript:;" class="minus fr">-</a>	
+					<input type="text" id="count" name="count" class="num_show fl" value="1">
+                    <input type="hidden" id="goods_id" name="goods_id" class="num_show fl" value="{{ goods.id }}">
+                    <input type="hidden" id="num" name="value" value="{{ number }}">
+					<a href="javascript:;" onclick="changeCount('add')" id="add" class="add fr">+</a>
+					<a href="javascript:;" onclick="changeCount('minus')" id="minus" class="minus fr">-</a>
 				</div> 
 			</div>
-			<div class="total">总价：<em>16.80元</em></div>
+			<div class="total">总价：<em id="total">{{ goods.goods_price }}</em><em>元</em></div>
 			<div class="operate_btn">
-				<a href="javascript:;" class="buy_btn">立即购买</a>
-				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
+				<input type="submit" class="buy_btn" id="buy" value="立即购买">
+                <a href="#" class="add_cart" id="add_cart">加入购物车</a>
 			</div>
+            </form>
 		</div>
 	</div>
 
@@ -70,25 +75,72 @@
 {% endblock %}
 
 {% block script %}
-    <script type="text/javascript" src="/static/buyer/js/jquery-1.12.2.js"></script>
-	<script type="text/javascript">
-		var $add_x = $('#add_cart').offset().top;
-		var $add_y = $('#add_cart').offset().left;
+    <script src="/static/buyer/js/jquery-1.12.4.min.js"></script>
+    <script>
+        function changeCount(ty) {
+            var value = $("#count").val();
+            var number = $("#num").val();
+            if(ty == "add"){
+                $("#count").val(++value)
+            }else {
+                if (value <= 1){
+                    $("#count").val(1)
+                } else {
+                    $("#count").val(--value)
+                }
+            }
+            if(value <= number){
+                var price = $("#price").text();
+                var total_price = value * price;
+                $("#total").text(total_price)
+            }else {
+                alert("库存不足！")
+            }
+        }
 
-		var $to_x = $('#show_count').offset().top;
-		var $to_y = $('#show_count').offset().left;
+    </script>
+    <script>
+        $("#count").blur(function () {
+            var price = $("#price").text();
+            var value = $("#count").val();
+            var number = $("#num").val();
+            if(value <= number){
+                var total_price = value * price;
+                $("#total").text(total_price)
+            }else {
+                alert("库存不足！")
+            }
 
-		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
-		$('#add_cart').click(function(){
-			$(".add_jump").stop().animate({
-				'left': $to_y+7,
-				'top': $to_x+7},
-				"fast", function() {
-					$(".add_jump").fadeOut('fast',function(){
-						$('#show_count').html(2);
-					});
-
-			});
-		})
-	</script>
+        }
+        )
+    </script>
+    <script>
+        $("#add_cart").click(
+            function () {
+                var count = $("#count").val();
+                var goods_id = $("#goods_id").val();
+                var sendData = {
+                    "count": count,
+                    "goods_id": goods_id,
+                    "csrfmiddlewaretoken": '{{ csrf_token }}'
+                };
+                console.log(sendData);
+                var url = "/Buyer/add_cart/";
+                $.ajax(
+                    {
+                        url: url,
+                        type: "post",
+                        data: sendData,
+                        success: function (data) {
+                            alert("加入购物车成功！");
+                            console.log(data)
+                        },
+                        error: function (error) {
+                            console.log(error)
+                        }
+                    }
+                )
+            }
+        )
+    </script>
 {% endblock %}

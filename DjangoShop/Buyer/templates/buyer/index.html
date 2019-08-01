@@ -13,12 +13,12 @@
 {% block content %}
     <div class="center_con clearfix">
 		<ul class="subnav fl">
-			<li><a href="/Buyer/goods_list/?type_id=12" class="fruit">新鲜水果</a></li>
-			<li><a href="/Buyer/goods_list/?type_id=13" class="seafood">海鲜水产</a></li>
-			<li><a href="/Buyer/goods_list/?type_id=14" class="meet">猪牛羊肉</a></li>
-			<li><a href="/Buyer/goods_list/?type_id=15" class="egg">禽类蛋品</a></li>
-			<li><a href="/Buyer/goods_list/?type_id=16" class="vegetables">新鲜蔬菜</a></li>
-			<li><a href="/Buyer/goods_list/?type_id=17" class="ice">速冻食品</a></li>
+			<li><a href="#a1" class="fruit">新鲜水果</a></li>
+			<li><a href="#a2" class="seafood">海鲜水产</a></li>
+			<li><a href="#a3" class="meet">猪牛羊肉</a></li>
+			<li><a href="#a4" class="egg">禽类蛋品</a></li>
+			<li><a href="#a5" class="vegetables">新鲜蔬菜</a></li>
+			<li><a href="#a6" class="ice">速冻食品</a></li>
 		</ul>
 		<div class="slide fl">
 			<ul class="slide_pics">
@@ -39,7 +39,7 @@
     {% for goods_type in result_list %}
 	<div class="list_model">
 		<div class="list_title clearfix">
-			<h3 class="fl" id="model01">{{ goods_type.name }}</h3>
+			<h3 class="fl" id="a{{ forloop.counter }}">{{ goods_type.name }}</h3>
 			<div class="subtitle fl">
 				<span>|</span>
 				<a href="#">鲜芒</a>
